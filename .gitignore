@@ -1,0 +1,86 @@
+# files to ignore in terraform projects
+*.tfstate
+*.tfstate.backup
+.terraform/
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraform.lock.hcl
+.terragrunt-cache/
+# local environment files
+*.tfvars
+*.tfvars.json
+# sensitive variable files
+secrets.auto.tfvars
+secrets.auto.tfvars.json
+# CLI configuration files
+.terraformrc
+terraform.rc
+# Azure specific ignores
+.terraform/
+*.backup
+*.log
+*.tfplan
+*.tfvars
+*.tfstate
+*.tfstate.backup
+# Ignore any files that contain sensitive information
+*secrets*
+*credentials*
+# Ignore IDE specific files
+.vscode/
+.idea/
+*.iml
+# Ignore OS specific files
+.DS_Store
+Thumbs.db
+# Ignore other common files
+*.bak
+*.swp
+*~
+# Ignore generated documentation
+docs/
+# Ignore test output files
+test-output/
+# Ignore coverage reports
+coverage/
+*.coverprofile
+# Ignore compiled binaries
+bin/
+*.exe
+*.dll
+*.so
+*.dylib
+# Ignore package manager files
+node_modules/
+vendor/
+.pnpm-store/
+# Ignore log files
+logs/
+*.log
+# Ignore temporary files
+tmp/
+temp/
+# Ignore backup files
+*.old
+*.orig
+# Ignore lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+# Ignore build artifacts
+dist/
+build/
+out/
+
+# Ignore IDE specific files
+.vscode/
+.idea/
+*.iml
+
+
+            
+
+
