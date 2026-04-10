@@ -38,3 +38,13 @@ variable "aks_cluster_name" {
   type        = string
 }
 
+variable "admin_username" {
+    description = "Admin username for AKS cluster"
+    type        = string
+}
+
+variable "admin_password" {
+    description = "Admin password for AKS cluster"
+    type        = string
+    sensitive   = true
+}
