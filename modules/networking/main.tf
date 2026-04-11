@@ -9,21 +9,30 @@ resource "azurerm_subnet" "app_subnet" {
   name                 = "${var.resource_group_name}-subnet"
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes     = var.subnet_prefixes["app"]
+  address_prefixes     = [var.subnet_prefixes["app"]]
 }
 
 resource "azurerm_subnet" "database_subnet" {
   name                 = "${var.resource_group_name}-db-subnet"
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes     = var.subnet_prefixes["database"]
+  address_prefixes     = [var.subnet_prefixes["database"]]
+  service_endpoints = ["Microsoft.Storage"]
+  delegation {
+        name = "db_delegation"
+        service_delegation {
+            name    = "Microsoft.DBforPostgreSQL/flexibleServers"
+            actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
+        }
+         
+  }
 }
 
 resource "azurerm_subnet" "aks_subnet" {
   name                 = "${var.resource_group_name}-db-subnet"
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes     = var.subnet_prefixes["aks"]
+  address_prefixes     = [var.subnet_prefixes["aks"]]
     delegation {
       
         name = "aks_delegation"
@@ -39,6 +48,6 @@ resource "azurerm_subnet" "web_subnet" {
   name                 = "${var.resource_group_name}-web-subnet"
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes     = var.subnet_prefixes["web"]
+  address_prefixes     = [var.subnet_prefixes["web"]]
   
 }
