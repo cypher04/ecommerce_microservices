@@ -13,18 +13,18 @@ resource "azurerm_private_dns_zone_virtual_network_link" "private_dns_zone_link"
   depends_on = [ var.subnet_prefixes]
 }
 
-resource "azurerm_private_endpoint" "ecommerce_private_endpoint" {
-  name                = "ecommerce-private-endpoint"
-  location            = var.location
-  resource_group_name = var.resource_group_name
-  subnet_id           = var.subnet_ids["database"]
+# resource "azurerm_private_endpoint" "ecommerce_private_endpoint" {
+#   name                = "ecommerce-private-endpoint"
+#   location            = var.location
+#   resource_group_name = var.resource_group_name
+#   subnet_id           = var.subnet_ids["database"]
 
-  private_service_connection {
-    name                           = "postgresql-flexible-server-connection"
-    is_manual_connection            = false
-    private_connection_resource_id   = var.flexible_server_id
-    subresource_names               = ["postgresqlServer"]
-  }
+#   private_service_connection {
+#     name                           = "postgresql-flexible-server-connection"
+#     is_manual_connection            = false
+#     private_connection_resource_id   = var.flexible_server_id
+#     subresource_names               = ["postgresqlServer"]
+#   }
   
-}
+# }
 

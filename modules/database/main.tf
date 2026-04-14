@@ -7,7 +7,7 @@ resource "azurerm_postgresql_flexible_server" "ecommerce-db" {
   public_network_access_enabled = false
   administrator_login = var.admin_username
   administrator_password = var.admin_password
-  zone = "1"
+  zone = "2"
   version             = "12"
   storage_mb          = 32768
   storage_tier = "P4"
