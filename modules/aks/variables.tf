@@ -17,3 +17,8 @@ variable "acr_id" {
     description = "The ID of the Azure Container Registry to link with the AKS cluster."
     type        = string
 }
+
+variable "app_gateway_id" {
+    description = "The ID of the Application Gateway to link with the AKS cluster."
+    type        = string
+}
