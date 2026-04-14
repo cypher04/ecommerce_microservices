@@ -25,6 +25,7 @@ module "aks" {
   resource_group_name      = azurerm_resource_group.ecommerce_rg.name
   log_analytics_id = module.monitoring.log_analytics_id
   acr_id = module.compute.acr_id
+  app_gateway_id = module.security.app_gateway_id
 
 
   depends_on = [module.networking]
@@ -45,6 +46,10 @@ module "security" {
   source              = "../../modules/security"
   location            = var.location
   resource_group_name = azurerm_resource_group.ecommerce_rg.name
+  subnet_prefixes = var.subnet_prefixes
+  subnet_ids = module.networking.subnet_ids
+  app_gateway_public_ip_id = module.networking.app_gateway_public_ip_id
+  
 }
 
 module "monitoring" {
