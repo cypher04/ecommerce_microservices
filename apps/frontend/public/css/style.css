@@ -1,0 +1,69 @@
+:root {
+  --primary: #0d6efd;
+  --bg-light: #f8f9fa;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-light);
+}
+
+main {
+  flex: 1;
+}
+
+.product-card {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.product-img-placeholder {
+  height: 200px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 3rem;
+}
+
+.hero-section {
+  background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);
+  color: white;
+  padding: 4rem 0;
+}
+
+.badge-status-paid {
+  background-color: #198754;
+}
+
+.badge-status-pending {
+  background-color: #ffc107;
+  color: #000;
+}
+
+.badge-status-failed {
+  background-color: #dc3545;
+}
+
+.badge-status-cancelled {
+  background-color: #6c757d;
+}
+
+.toast-container {
+  z-index: 9999;
+}
+
+#loading-spinner {
+  display: none;
+}
+
+#loading-spinner.active {
+  display: flex;
+}
