@@ -24,13 +24,15 @@ resource "azurerm_kubernetes_cluster" "aks" {
         service_cidr   = "10.0.0.0/16"
     }
 
-   
+   ingress_application_gateway {
+        gateway_id = var.app_gateway_id
+    }
+   }
 
-}
 
 resource "azurerm_kubernetes_cluster_node_pool" "node_pool" {
     name                = "additional"
-    kubernetes_cluster_id = var.acr_id
+    kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
     node_count         = 1
     vm_size            = "Standard_DS2_v2"
     auto_scaling_enabled = true
