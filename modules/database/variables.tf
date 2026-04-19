@@ -38,3 +38,8 @@ variable "private_dns_zone_id" {
     description = "The ID of the private DNS zone for the PostgreSQL flexible server."
     type        = string
 }
+
+variable "dbname" {
+    description = "The name of the PostgreSQL database to create."
+    type        = string
+}

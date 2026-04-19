@@ -1,5 +1,5 @@
 resource "azurerm_postgresql_flexible_server" "ecommerce-db" {
-  name                = "${var.resource_group_name}-db"
+  name                = var.dbname
   resource_group_name = var.resource_group_name
   location            = var.location
   delegated_subnet_id = var.subnet_ids["database"]
