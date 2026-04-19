@@ -48,3 +48,24 @@ variable "admin_password" {
     type        = string
     sensitive   = true
 }
+
+variable "dbhostname" {
+    description = "Hostname of the PostgreSQL database"
+    type        = string
+}
+
+variable "dbname" {
+    description = "Name of the PostgreSQL database"
+    type        = string
+}
+
+variable "dbusername" {
+    description = "Username for the PostgreSQL database"
+    type        = string
+}
+
+variable "dbpassword" {
+    description = "Password for the PostgreSQL database"
+    type        = string
+    sensitive   = true
+}
