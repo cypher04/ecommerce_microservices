@@ -22,3 +22,35 @@ variable "app_gateway_id" {
     description = "The ID of the Application Gateway to link with the AKS cluster."
     type        = string
 }
+
+variable "admin_username" {
+    description = "The admin username for the AKS cluster."
+    type        = string
+}
+
+variable "admin_password" {
+    description = "The admin password for the AKS cluster."
+    type        = string
+    sensitive   = true
+}
+
+variable "dbhostname" {
+    description = "The hostname of the PostgreSQL database."
+    type        = string
+}
+
+variable "dbname" {
+    description = "The name of the PostgreSQL database."
+    type        = string
+}
+
+variable "dbpassword" {
+    description = "The password for the PostgreSQL database."
+    type        = string
+    sensitive   = true
+}
+
+variable "dbusername" {
+    description = "The username for the PostgreSQL database."
+    type        = string
+}

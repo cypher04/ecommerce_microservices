@@ -10,6 +10,51 @@ resource "azurerm_resource_group" "ecommerce_rg" {
   
 }
 
+# resource "helm_release" "helm_auth" {
+#   name       = "ecommerce-helm"
+#   namespace  = "ecommerce-app"
+#   chart      = "../../helm/apps-auth-service/"
+#   version    = "0.1.0"
+# }
+
+# resource "helm_release" "helm_order" {
+#   name       = "ecommerce-helm"
+#   namespace  = "ecommerce-app"
+#   chart      = "../../helm/apps-order-service/"
+#   version    = "0.1.0"
+# }
+
+# resource "helm_release" "helm_frontend" {
+#   name       = "ecommerce-helm"
+#   namespace  = "ecommerce-app"
+#   chart      = "../../helm/apps-frontend/"
+#   version    = "0.1.0"
+# }
+
+# resource "helm_release" "helm_payment" {
+#   name       = "ecommerce-helm"
+#   namespace  = "ecommerce-app"
+#   chart      = "../../helm/apps-payment-service/"
+#   version    = "0.1.0"
+# }
+
+# resource "helm_release" "helm_product" {
+#   name       = "ecommerce-helm"
+#   namespace  = "ecommerce-app"
+#   chart      = "../../helm/apps-product-service/"
+#   version    = "0.1.0"
+#   timeout = 6000
+# }
+
+resource "helm_release" "helm_product-2" {
+  name       = "ecommerce-helm-2"
+  namespace  = "ecommerce-app"
+  chart      = "../../helm/apps-product-service/"
+  # version    = "0.1.0"
+  timeout = 6000
+  wait = false
+}
+
 
 module "compute" {
   source              = "../../modules/compute"
@@ -69,6 +114,7 @@ module "database" {
     virtual_network_link_name = module.private_endpoint.virtual_network_link_name
     subnet_prefixes = var.subnet_prefixes
     subnet_ids = module.networking.subnet_ids
+    dbname = var.dbname
 }
 
 module "private_endpoint" {

@@ -81,6 +81,20 @@ resource "azurerm_network_security_rule" "allow_web_to_aks" {
   
 }
 
+resource "azurerm_network_security_rule" "allow_appgw_health_probes" {
+  name                        = "Allow_AppGW_Health_Probes"
+  resource_group_name         = var.resource_group_name
+  priority                    = 100
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = "65200-65535"
+  source_address_prefix       = "GatewayManager"
+  destination_address_prefix  = "*"
+  network_security_group_name = azurerm_network_security_group.appgw_nsg.name
+}
+
 resource "azurerm_network_security_rule" "deny_web_to_db" {
   name                        = "Deny_Web_to_DB"
   resource_group_name = var.resource_group_name

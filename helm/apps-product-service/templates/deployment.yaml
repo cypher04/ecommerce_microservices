@@ -40,6 +40,36 @@ spec:
           {{- end }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+
+          # Environment variables can be set here more information can be found here: https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/
+          env:
+            - name: DBHOSTNAME
+              valueFrom:
+                secretKeyRef:
+                  name: basic-auth
+                  key: host
+            - name: DBNAME
+              valueFrom:
+                secretKeyRef:
+                  name: basic-auth
+                  key: name
+            - name: DBUSERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: basic-auth
+                  key: username
+            - name: DBPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: basic-auth
+                  key: password
+            - name: DBPORT
+              valueFrom:
+                secretKeyRef:
+                  name: basic-auth
+                  key: db_port
+            - name: PORT
+              value: "3000"
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
