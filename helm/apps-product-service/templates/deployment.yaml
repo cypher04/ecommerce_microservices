@@ -46,28 +46,28 @@ spec:
             - name: DBHOSTNAME
               valueFrom:
                 secretKeyRef:
-                  name: basic-auth
-                  key: host
+                  name: postgres-secret
+                  key: DBHOSTNAME
             - name: DBNAME
               valueFrom:
                 secretKeyRef:
-                  name: basic-auth
-                  key: name
+                  name: postgres-secret
+                  key: DBNAME
             - name: DBUSERNAME
               valueFrom:
                 secretKeyRef:
-                  name: basic-auth
-                  key: username
+                  name: postgres-secret
+                  key: DBUSERNAME
             - name: DBPASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: basic-auth
-                  key: password
+                  name: postgres-secret
+                  key: DBPASSWORD
             - name: DBPORT
               valueFrom:
                 secretKeyRef:
-                  name: basic-auth
-                  key: db_port
+                  name: postgres-secret
+                  key: DBPORT
             - name: PORT
               value: "3000"
           ports:
