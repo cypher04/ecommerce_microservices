@@ -43,33 +43,31 @@ spec:
 
           # Environment variables can be set here more information can be found here: https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/
           env:
-            - name: DBHOSTNAME
+            - name: DB_HOST
               valueFrom:
                 secretKeyRef:
-                  name: postgres-secret
-                  key: DBHOSTNAME
-            - name: DBNAME
+                  name: basic-auth
+                  key: DB_HOST
+            - name: DB_NAME
               valueFrom:
                 secretKeyRef:
-                  name: postgres-secret
-                  key: DBNAME
-            - name: DBUSERNAME
+                  name: basic-auth
+                  key: DB_NAME
+            - name: DB_USER
               valueFrom:
                 secretKeyRef:
-                  name: postgres-secret
-                  key: DBUSERNAME
-            - name: DBPASSWORD
+                  name: basic-auth
+                  key: DB_USER
+            - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: postgres-secret
-                  key: DBPASSWORD
-            - name: DBPORT
+                  name: basic-auth
+                  key: DB_PASSWORD
+            - name: DB_PORT
               valueFrom:
                 secretKeyRef:
-                  name: postgres-secret
-                  key: DBPORT
-            - name: PORT
-              value: "3000"
+                  name: basic-auth
+                  key: DB_PORT
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
