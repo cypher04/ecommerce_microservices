@@ -9,7 +9,7 @@ replicaCount: 1
 image:
   repository: ecommerceacrdevmicroservices.azurecr.io/apps-product-service
   # This sets the pull policy for images.
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
 
@@ -19,7 +19,10 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
-
+# GatewayClassName: "azure-alb-external"
+# Gateway:
+#   name: "gateway"
+#   namespace: "ecommerce-app"
 
 # Create namespace if it doesn't exist.
 namespaceCreation:
@@ -34,10 +37,11 @@ serviceAccount:
   # Automatically mount a ServiceAccount's API credentials?
   automount: true
   # Annotations to add to the service account.
-  annotations: {}
+  # annotations: {
+  #   azure.workload.identity/client-id: "d1c8e5b7-9a3c-4f0e-9a1b-2f8e5c6d7e8f"}
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template.
-  name: ""
+  name: "" #What is t
 
 # This is for setting Kubernetes Annotations to a Pod.
 # For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
@@ -62,20 +66,20 @@ service:
   # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
   type: ClusterIP
   # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
-  port: 3000
+  port: 3002
 
 # This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
 ingress:
-  enabled: true
-  className: "azure-application-gateway"
+  enabled: false
+  # className: "azure-alb-external"
   annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
-    - host: ""
+    - host: chart-example.local
       paths:
         - path: /
-          pathType: Prefix
+          pathType: ImplementationSpecific
   tls: []
     # - secretName: chart-example-tls
     #   hosts:
@@ -134,12 +138,18 @@ resources: {}
 # This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
 livenessProbe:
   httpGet:
-    path: /health
-    port: 3000
+    path: /livez
+    port: 3002
+    httpHeaders:
+    - name: Custom-Header
+      value: Awesome
+  initialDelaySeconds: 15
+  timeoutSeconds: 5
+  periodSeconds: 10
 readinessProbe:
   httpGet:
     path: /health
-    port: 3000
+    port: 3002
 
 # This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
 autoscaling:
@@ -163,6 +173,7 @@ volumeMounts: []
   #   readOnly: true
 
 nodeSelector: {}
+
 
 tolerations: []
 
