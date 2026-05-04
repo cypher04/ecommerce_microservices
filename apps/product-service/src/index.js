@@ -32,6 +32,8 @@ app.get('/health', async (req, res) => {
   }
 });
 
+app.get('/livez', (req, res) => res.sendStatus(200));
+
 app.listen(PORT, () => {
   logger.info(`Product service running on port ${PORT}`);
 });

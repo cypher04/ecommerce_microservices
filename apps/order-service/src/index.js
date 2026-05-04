@@ -31,6 +31,7 @@ app.get('/health', async (req, res) => {
     res.status(503).json({ status: 'unhealthy', service: 'order-service', error: 'Database connection failed' });
   }
 });
+app.get('/livez', (req, res) => res.sendStatus(200));
 
 app.listen(PORT, () => {
   logger.info(`Order service running on port ${PORT}`);
