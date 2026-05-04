@@ -18,12 +18,12 @@ variable "vnet_id" {
     type        = string
 }
 
-variable "flexible_server_id" {
-    description = "The ID of the Azure Database for MySQL Flexible Server to link with the private endpoint."
-    type        = string
-}
-
 variable "subnet_ids" {
     description = "A map of subnet IDs for the private endpoint."
     type        = map(string)
+}
+
+variable "acr_id" {
+    description = "The ID of the Azure Container Registry to link with the private endpoint."
+    type        = string
 }
