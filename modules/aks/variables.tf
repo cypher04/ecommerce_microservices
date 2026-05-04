@@ -18,10 +18,10 @@ variable "acr_id" {
     type        = string
 }
 
-variable "app_gateway_id" {
-    description = "The ID of the Application Gateway to link with the AKS cluster."
-    type        = string
-}
+# variable "app_gateway_id" {
+#     description = "The ID of the Application Gateway to link with the AKS cluster."
+#     type        = string
+# }
 
 variable "admin_username" {
     description = "The admin username for the AKS cluster."
@@ -34,23 +34,44 @@ variable "admin_password" {
     sensitive   = true
 }
 
-variable "dbhostname" {
+variable "db_host" {
     description = "The hostname of the PostgreSQL database."
     type        = string
 }
 
-variable "dbname" {
+variable "db_name" {
     description = "The name of the PostgreSQL database."
     type        = string
 }
 
-variable "dbpassword" {
+variable "db_password" {
     description = "The password for the PostgreSQL database."
     type        = string
     sensitive   = true
 }
 
-variable "dbusername" {
+variable "db_user" {
     description = "The username for the PostgreSQL database."
+    type        = string
+}
+
+# variable "alb_identity_id" {
+#     description = "The ID of the user-assigned identity for the Application Gateway Ingress Controller."
+#     type        = string 
+# }
+
+variable "oidc_issuer_url" {
+    description = "The OIDC issuer URL for the AKS cluster, used for federated identity."
+    type        = string
+}
+
+variable "subnet_ids" {
+    description = "A map of subnet IDs for the AKS cluster."
+    type        = map(string)
+}
+
+
+variable "vnet_id" {
+    description = "The ID of the virtual network where the AKS cluster will be deployed."
     type        = string
 }
