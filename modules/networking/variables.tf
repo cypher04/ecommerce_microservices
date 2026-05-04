@@ -22,3 +22,8 @@ variable "subnet_prefixes" {
     description = "The address prefixes for the subnet."
     type        = map(string)
 }
+
+variable "oidc_issuer_url" {
+    description = "The URL of the OpenID Connect (OIDC) issuer."
+    type        = string
+}
