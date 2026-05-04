@@ -17,7 +17,17 @@ variable "subnet_ids" {
   type        = map(string) 
 }
 
-variable "app_gateway_public_ip_id" {
-  description = "The ID of the public IP for the Application Gateway"
+# variable "app_gateway_public_ip_id" {
+#   description = "The ID of the public IP for the Application Gateway"
+#   type        = string
+# }
+
+variable "acr_id" {
+  description = "The ID of the Azure Container Registry"
+  type        = string
+}
+
+variable "vnet_id" {
+  description = "The ID of the virtual network"
   type        = string
 }
