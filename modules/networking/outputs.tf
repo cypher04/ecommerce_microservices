@@ -10,11 +10,28 @@ output "subnet_ids" {
         database = azurerm_subnet.database_subnet.id
         aks      = azurerm_subnet.aks_subnet.id
         web      = azurerm_subnet.web_subnet.id
-        appgw    = azurerm_subnet.appgw.id
+        # agc      = azurerm_subnet.agc_subnet.id
     }
 }
 
-output "app_gateway_public_ip_id" {
+output "public_ip_id" {
     description = "The ID of the public IP address for the Application Gateway."
     value       = azurerm_public_ip.app_gateway_public_ip.id
 }
+
+# output "alb_id" {
+#     description = "The ID of the load balancer for the AGC."
+#     value       = azurerm_application_load_balancer.alb.id
+# }
+
+// output alb identity 
+# output "alb_identity_id" {
+#     description = "The ID of the managed identity for the load balancer."
+#     value       = azurerm_user_assigned_identity.alb_identity.id
+# }
+
+
+
+
+
+

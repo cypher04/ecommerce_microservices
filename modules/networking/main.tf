@@ -34,13 +34,13 @@ resource "azurerm_subnet" "aks_subnet" {
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = [var.subnet_prefixes["aks"]]
   
-    delegation {
-    name = "aciDelegation"
-    service_delegation {
-      name    = "Microsoft.ContainerInstance/containerGroups"
-      actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
-    }
-  }
+  #   delegation {
+  #   name = "aciDelegation"
+  #   service_delegation {
+  #     name    = "Microsoft.ContainerInstance/containerGroups"
+  #     actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
+  #   }
+  # }
 }
 
 resource "azurerm_subnet" "web_subnet" {
@@ -51,12 +51,12 @@ resource "azurerm_subnet" "web_subnet" {
   
 }
 
-resource "azurerm_subnet" "appgw" {
-    name                 = "${var.resource_group_name}-appgw-subnet"
-    resource_group_name  = var.resource_group_name
-    virtual_network_name = azurerm_virtual_network.vnet.name
-    address_prefixes     = [var.subnet_prefixes["appgw"]]
-}
+# resource "azurerm_subnet" "appgw" {
+#     name                 = "${var.resource_group_name}-appgw-subnet"
+#     resource_group_name  = var.resource_group_name
+#     virtual_network_name = azurerm_virtual_network.vnet.name
+#     address_prefixes     = [var.subnet_prefixes["appgw"]]
+# }
 
 resource "azurerm_public_ip" "app_gateway_public_ip" {
   name                = "${var.resource_group_name}-appgw-pip"
