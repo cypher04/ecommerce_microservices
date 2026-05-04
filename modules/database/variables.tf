@@ -19,11 +19,6 @@ variable "admin_password" {
     sensitive   = true
 }
 
-variable "virtual_network_link_name" {
-    description = "The name of the virtual network link for the PostgreSQL flexible server."
-    type        = string
-}
-
 variable "subnet_prefixes" {
     description = "The address prefixes for the subnet."
     type        = map(string)
@@ -43,3 +38,4 @@ variable "dbname" {
     description = "The name of the PostgreSQL database to create."
     type        = string
 }
+

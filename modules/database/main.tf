@@ -1,5 +1,5 @@
-resource "azurerm_postgresql_flexible_server" "ecommerce-db" {
-  name                = var.dbname
+resource "azurerm_postgresql_flexible_server" "ecommerce-db-2" {
+  name                = "ecommerce-db-2"
   resource_group_name = var.resource_group_name
   location            = var.location
   delegated_subnet_id = var.subnet_ids["database"]
@@ -12,6 +12,15 @@ resource "azurerm_postgresql_flexible_server" "ecommerce-db" {
   storage_mb          = 32768
   storage_tier = "P4"
   sku_name = "B_Standard_B1ms"
-  
-  depends_on = [ var.virtual_network_link_name ]
+}
+
+
+
+
+resource "azurerm_postgresql_flexible_server_database" "ecommerce_db" {
+  name                = "ecommerce-database"
+  charset             = "UTF8"
+  collation           = "en_US.utf8"
+  server_id = azurerm_postgresql_flexible_server.ecommerce-db-2.id
+
 }
