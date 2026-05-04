@@ -21,3 +21,7 @@ output "cluster_ca_certificate" {
 output "host" {
     value = azurerm_kubernetes_cluster.aks.kube_config.0.host
 }
+
+output "oidc_issuer_url" {
+    value = azurerm_kubernetes_cluster.aks.oidc_issuer_url
+}
