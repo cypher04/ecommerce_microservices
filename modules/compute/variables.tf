@@ -13,3 +13,18 @@ variable "location" {
   type        = string
 }
 
+variable "vm_admin_name" {
+    description = "The administrator username for the virtual machine."
+    type        = string
+}
+
+variable "vm_admin_password" {
+    description = "The administrator password for the virtual machine."
+    type        = string
+    sensitive   = true
+}
+
+variable "subnet_ids" {
+    description = "The IDs of the subnets for the virtual machine."
+    type        = map(string)
+}
