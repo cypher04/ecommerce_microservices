@@ -38,6 +38,8 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', service: 'frontend', timestamp: new Date().toISOString() });
 });
 
+app.get('/livez', (req, res) => res.sendStatus(200));
+
 // SPA fallback — serve index.html for unmatched routes
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
