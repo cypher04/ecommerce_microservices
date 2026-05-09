@@ -32,6 +32,36 @@ spec:
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+
+      env:
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: basic-auth
+                  key: DB_HOST
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: basic-auth
+                  key: DB_NAME
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: basic-auth
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: basic-auth
+                  key: DB_PASSWORD
+            - name: DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: basic-auth
+                  key: DB_PORT
+
+
+
       containers:
         - name: {{ .Chart.Name }}
           {{- with .Values.securityContext }}
