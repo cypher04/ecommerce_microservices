@@ -20,6 +20,8 @@ app.use(morgan('combined', {
 // Routes
 app.use('/api/payments', paymentRoutes);
 
+app.get('/livez', (req, res) => res.sendStatus(200));
+
 // Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', service: 'payment-service', timestamp: new Date().toISOString() });
