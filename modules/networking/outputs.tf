@@ -10,7 +10,7 @@ output "subnet_ids" {
         database = azurerm_subnet.database_subnet.id
         aks      = azurerm_subnet.aks_subnet.id
         web      = azurerm_subnet.web_subnet.id
-        # agc      = azurerm_subnet.agc_subnet.id
+        agc      = azurerm_subnet.agc_subnet.id
     }
 }
 

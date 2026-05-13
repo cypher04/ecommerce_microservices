@@ -51,16 +51,43 @@ resource "azurerm_subnet" "web_subnet" {
   
 }
 
-# resource "azurerm_subnet" "appgw" {
-#     name                 = "${var.resource_group_name}-appgw-subnet"
-#     resource_group_name  = var.resource_group_name
-#     virtual_network_name = azurerm_virtual_network.vnet.name
-#     address_prefixes     = [var.subnet_prefixes["appgw"]]
-# }
+resource "azurerm_subnet" "agc_subnet" {
+  name                 = "${var.resource_group_name}-agc-subnet"
+  resource_group_name  = var.resource_group_name
+  virtual_network_name = azurerm_virtual_network.vnet.name
+  address_prefixes     = [var.subnet_prefixes["agc"]]
+
+  delegation {
+    name = "agc-delegation"
+    service_delegation {
+      name    = "Microsoft.ServiceNetworking/trafficControllers"
+      actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
+    }
+  }
+}
 
 resource "azurerm_public_ip" "app_gateway_public_ip" {
   name                = "${var.resource_group_name}-appgw-pip"
   location            = var.location
   resource_group_name = var.resource_group_name
   allocation_method   = "Static"
+
 }
+
+# resource "azurerm_lb" "aks_lb" {
+#   name                = "${var.resource_group_name}-aks-lb"
+#   location            = var.location
+#   resource_group_name = var.resource_group_name
+#   sku                 = "Standard"
+
+#   frontend_ip_configuration {
+#     name                 = "${var.resource_group_name}-aks-frontend"
+#     public_ip_address_id = azurerm_public_ip.app_gateway_public_ip.id
+#   }
+  
+# }
+
+# resource "azurerm_lb_backend_address_pool" "aks_backend" {
+#   name                = "${var.resource_group_name}-aks-backend"
+#   loadbalancer_id     = azurerm_lb.aks_lb.id
+# }
