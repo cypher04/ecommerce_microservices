@@ -15,7 +15,7 @@ output "agc_lb_frontend_name" {
 
 output "agc_lb_frontend_fqdn" {
     description = "The FQDN of the Application Load Balancer frontend for AGC"
-    value       = azurerm_application_load_balancer_frontend.agc_lb_frontend.fqdn
+    value       = azurerm_application_load_balancer_frontend.agc_lb_frontend.fully_qualified_domain_name
 }
 
 output "agc_waf_policy_id" {

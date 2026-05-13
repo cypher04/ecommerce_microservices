@@ -80,3 +80,7 @@ variable "vm_admin_password" {
     type        = string
     sensitive   = true
 }
+# variable "alb_principal_id" {
+#     description = "Principal ID of the user-assigned managed identity for Application Load Balancer"
+#     type        = string
+# }

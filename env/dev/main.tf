@@ -14,12 +14,32 @@ data "azurerm_client_config" "current" {
 }
 
 
+resource "azurerm_user_assigned_identity" "alb_user_id" {
+  name                = "${var.project_name}-alb-identity"
+  resource_group_name = azurerm_resource_group.ecommerce_rg.name
+  location            = var.location
+}
+
+
+resource "azurerm_federated_identity_credential" "alb_federated_identity" {
+  name                = "${var.project_name}-alb-federated-identity"
+  audience = ["api://AzureADTokenExchange"]
+  user_assigned_identity_id = azurerm_user_assigned_identity.alb_user_id.id
+  issuer              = module.aks.oidc_issuer_url
+  subject             = "system:serviceaccount:ecommerce-app:alb-service-account"
+}
+
+
+
 resource "helm_release" "helm_auth" {
   name       = "ecommerce-helm-auth-4"
   namespace  = "ecommerce-app"
   chart      = "../../helm/apps-auth-service/"
   # version    = "0.1.0"
   timeout = 6000
+
+  depends_on = [ helm_release.shared_gateway ]
+
 }
 
 resource "helm_release" "helm_order" {
@@ -28,52 +48,92 @@ resource "helm_release" "helm_order" {
   chart      = "../../helm/apps-order-service/"
         # version    = "0.1.0"
   timeout = 6000
+
+  depends_on = [ helm_release.shared_gateway ]
+
 }
 
-# resource "helm_release" "helm_frontend" {
-#   name       = "ecommerce-helm"
-#   namespace  = "ecommerce-app"
-#   chart      = "../../helm/apps-frontend/"
-#   version    = "0.1.0"
-# }
+resource "helm_release" "helm_frontend" {
+  name       = "ecommerce-helm-frontend"
+  namespace  = "ecommerce-app"
+  chart      = "../../helm/apps-frontend/"
+  version    = "0.1.0"
+  timeout = 6000
+  depends_on = [ helm_release.shared_gateway ]
+}
 
-# resource "helm_release" "helm_payment" {
-#   name       = "ecommerce-helm"
-#   namespace  = "ecommerce-app"
-#   chart      = "../../helm/apps-payment-service/"
-#   version    = "0.1.0"
-# }
+resource "helm_release" "helm_payment" {
+  name       = "ecommerce-helm-payment-2"
+  namespace  = "ecommerce-app"
+  chart      = "../../helm/apps-payment-service/"
+  version    = "0.1.0"
+  timeout = 6000
+  depends_on = [ helm_release.shared_gateway ]
+}
 
-resource "helm_release" "helm-product" {
-  name       = "ecommerce-helm-product-7"
+resource "helm_release" "helm_product" {
+  name       = "ecommerce-helm-product-8"
   namespace  = "ecommerce-app"
   chart      = "../../helm/apps-product-service/"
   # version    = "0.2.0"
   timeout = 6000
+
+  depends_on = [ helm_release.shared_gateway ]
 }
 
-# resource "helm_release" "agc_helm" {
-#   name       = "ecommerce-agc-helm"
-#   namespace  = "ecommerce-app"
-#   chart      ="oci://mcr.microsoft.com/application-lb/charts/alb-controller"
-#    version    = "1.5.0"
-#   # version    = "0.1.0"
-#   timeout = 6000
+
+// helm release charts for alb controller
+resource "helm_release" "alb_controller" {
+  name       = "alb-controller"
+  namespace  = "azure-alb-system"
+  chart      ="oci://mcr.microsoft.com/application-lb/charts/alb-controller"
+   version    = "1.7.9"
+  # version    = "0.1.0"
+  timeout = 6000
     
 
-#   depends_on = [module.aks]
+  values = [yamlencode({
 
-  
-# }
+    namespaceCreation = {
+      enabled = true
+      namespace = "azure-alb-system"
+    }
 
-# resource "helm_release" "helm_product-2" {
-#   name       = "ecommerce-helm-2"
-#   namespace  = "ecommerce-app"
-#   chart      = "../../helm/apps-product-service/"
-#   # version    = "0.1.0"
-#   timeout = 6000
-#   wait = false
-# }
+    albController = {
+      namespace = "azure-alb-system"
+      podIdentity = {
+        clientID = azurerm_user_assigned_identity.alb_user_id.client_id
+      }
+    }
+  })]
+
+  depends_on = [module.aks, azurerm_federated_identity_credential.alb_federated_identity, module.agc]
+}
+
+
+// helm release chart for shared gateway
+resource "helm_release" "shared_gateway" {
+  name       = "shared-gateway"
+  namespace  = "ecommerce-app"
+  chart      = "../../helm/ecommerce-app/"
+  timeout = 6000
+
+
+  values = [yamlencode({
+    gateway = {
+      enabled = true
+      name = "shared-gateway"
+      agcID = module.agc.agc_lb_id
+      frontendName = module.agc.agc_lb_frontend_name
+    }
+  })]
+
+  depends_on = [helm_release.alb_controller]
+
+}
+
+
+
 
 
 module "compute" {
@@ -162,4 +222,15 @@ module "private_endpoint" {
   subnet_prefixes     = var.subnet_prefixes
   subnet_ids          = module.networking.subnet_ids
   acr_id              = module.compute.acr_id
+}
+
+
+module "agc" {
+  source              = "../../modules/agc"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.ecommerce_rg.name
+  subnet_ids          = module.networking.subnet_ids
+  alb_principal_id    = azurerm_user_assigned_identity.alb_user_id.principal_id
+
+  depends_on = [ module.networking ]
 }
