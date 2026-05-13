@@ -159,3 +159,10 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+gateway:
+  enabled: true
+  name: "shared-gateway"
+  agcID: ""
+  frontendName: ""
+  
