@@ -5,7 +5,7 @@ metadata:
   name: {{ .Values.gateway.name }}
   namespace: {{ .Release.Namespace }}
   annotations:
-    alb.networking.azure.io/alb-id: {{ .Values.gateway.agcId | quote }}
+    alb.networking.azure.io/alb-id: {{ .Values.gateway.agcID | quote }}
     alb.networking.azure.io/alb-frontend: {{ .Values.gateway.frontendName | quote }}
 spec:
   gatewayClassName: azure-alb-external
