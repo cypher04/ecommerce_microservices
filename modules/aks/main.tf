@@ -4,7 +4,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     resource_group_name = var.resource_group_name
     dns_prefix          = "ecommerceaks"
     sku_tier = "Free"
-    oidc_issuer_enabled = true
+    oidc_issuer_enabled = true // This produces an OIDC issuer URL that can be used for federated identity with the ALB and AGC configuration manager
     workload_identity_enabled = true
     
     default_node_pool {
@@ -67,6 +67,12 @@ resource "azurerm_role_assignment" "aks_acr_role" {
 resource "kubernetes_namespace_v1" "ecommerce_namespace" {
   metadata {
     name = "ecommerce-app"
+  }
+}
+
+resource "kubernetes_namespace_v1" "azure_alb_system" {
+  metadata {
+    name = "azure-alb-system"
   }
 }
 
