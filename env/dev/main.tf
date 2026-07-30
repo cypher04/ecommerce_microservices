@@ -26,13 +26,13 @@ resource "azurerm_federated_identity_credential" "alb_federated_identity" {
   audience = ["api://AzureADTokenExchange"]
   user_assigned_identity_id = azurerm_user_assigned_identity.alb_user_id.id
   issuer              = module.aks.oidc_issuer_url
-  subject             = "system:serviceaccount:ecommerce-app:alb-service-account"
+  subject =     "system:serviceaccount:azure-alb-system:alb-controller-sa"
 }
 
 
 
 resource "helm_release" "helm_auth" {
-  name       = "ecommerce-helm-auth-4"
+  name       = "ecommerce-helm-auth-7"
   namespace  = "ecommerce-app"
   chart      = "../../helm/apps-auth-service/"
   # version    = "0.1.0"
@@ -43,7 +43,7 @@ resource "helm_release" "helm_auth" {
 }
 
 resource "helm_release" "helm_order" {
-  name       = "ecommerce-helm-order"
+  name       = "ecommerce-helm-order-2"
   namespace  = "ecommerce-app"
   chart      = "../../helm/apps-order-service/"
         # version    = "0.1.0"
@@ -72,7 +72,7 @@ resource "helm_release" "helm_payment" {
 }
 
 resource "helm_release" "helm_product" {
-  name       = "ecommerce-helm-product-8"
+  name       = "ecommerce-helm-product-9"
   namespace  = "ecommerce-app"
   chart      = "../../helm/apps-product-service/"
   # version    = "0.2.0"
