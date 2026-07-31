@@ -18,8 +18,6 @@ in a private **PostgreSQL Flexible Server** reachable only from inside the VNet.
 - [Traffic flow](#traffic-flow)
 - [Deploying to Azure](#deploying-to-azure)
 - [Building and pushing images](#building-and-pushing-images)
-- [Configuration reference](#configuration-reference)
-- [Known gaps and caveats](#known-gaps-and-caveats)
 
 ---
 
@@ -210,9 +208,34 @@ credentials, an `AcrPull` role assignment for the kubelet identity, and a `local
 and allow DB → AKS on 80–443. A large commented-out `azurerm_application_gateway` block is the pre-AGC design,
 kept for reference.
 
-**Remote state** — `backend/` provisions a storage account and private container for state (versioning on,
-30-day soft delete, `prevent_destroy` on the account). Note that `env/dev/backend.tf` is currently **empty**, so
-dev still uses local state until that block is filled in.
+**Remote state** — `backend/` provisions the state backing store: resource group `ecommerceprojectdev-rg`,
+storage account `ecommerceprojectstatedev` (Standard LRS, TLS 1.2 minimum, HTTPS-only, blob versioning on,
+30-day delete retention, `prevent_destroy` lifecycle guard) and the private container
+`ecommerceprojectdev-tfstate`. Names are derived from the module's `project_name`, `environment` and `location`
+variables, which default to `ecommerceproject` / `dev` / `West Europe`.
+
+`env/dev` consumes it through this backend block in `env/dev/backend.tf`:
+
+```hcl
+terraform {
+  backend "azurerm" {
+    resource_group_name  = "ecommerceprojectdev-rg"
+    storage_account_name = "ecommerceprojectstatedev"
+    container_name       = "ecommerceprojectdev-tfstate"
+    key                  = "dev.terraform.tfstate"
+  }
+}
+```
+
+The backing store must exist before `terraform init` in `env/dev` can succeed, so apply `backend/` first. It
+keeps its own local state — that is the usual bootstrap trade-off, since it cannot store state in a container it
+has not created yet. Blob leases give the state file locking, so concurrent applies are safe. Stage and prod
+should follow the same pattern with distinct `key` values (or their own containers) once those environments are
+built out.
+
+If you have an older local `env/dev/terraform.tfstate` from before the backend was configured, `terraform init`
+will offer to copy it into the container — accept, then delete the local copy and its `.backup` (they contain
+database credentials in plaintext). Use `terraform init -migrate-state` if the prompt does not appear.
 
 ## Traffic flow
 
@@ -240,14 +263,13 @@ Prerequisites: Azure CLI (logged in, subscription selected), Terraform ≥ 1.5, 
 SSH public key at `~/.ssh/id_rsa.pub` (the jump VM references it directly).
 
 ```bash
-# 1. (optional, once) remote state backing store
+# 1. remote state backing store — required once, before env/dev can init
 cd backend && terraform init && terraform apply
-#    then fill in env/dev/backend.tf with the matching azurerm backend block
 
 # 2. dev environment — infra + charts in one apply
 cd env/dev
 # author terraform.tfvars from the table below — it is gitignored and not in the repo
-terraform init
+terraform init          # reads backend.tf and connects to the azurerm state container
 terraform plan
 terraform apply
 
@@ -313,44 +335,3 @@ done
 
 Then bump `image.tag` in the relevant `helm/apps-*/values.yaml` and re-apply. Because the tags are mutable,
 prefer immutable tags (git SHA) for anything beyond dev.
-
-## Configuration reference
-
-Ports are set per chart via `service.port`, which also drives `containerPort` and both probe ports.
-
-**Injected into every pod** from the `basic-auth` secret in `ecommerce-app`: `DB_HOST`, `DB_NAME`, `DB_USER`,
-`DB_PASSWORD`, `DB_PORT`. The secret is created by the AKS module from the `db_*` and `admin_*` variables.
-
-**Read by the apps but not currently injected by any chart**: `JWT_SECRET`, `JWT_EXPIRES_IN`, `NODE_ENV`,
-`LOG_LEVEL`, `PORT`, and the frontend's `AUTH_SERVICE_URL` / `PRODUCT_SERVICE_URL` / `ORDER_SERVICE_URL`, plus
-order-service's `PRODUCT_SERVICE_URL` / `PAYMENT_SERVICE_URL`. See the caveats below.
-
-## Known gaps and caveats
-
-These are real, current states of the repo — worth knowing before you deploy.
-
-- **`JWT_SECRET` is not injected in Kubernetes.** The compose file sets it, but the Helm deployments only
-  project the `DB_*` keys. In-cluster, `jwt.sign`/`jwt.verify` will receive `undefined` and auth will fail. Add
-  the key to the `basic-auth` secret (or a dedicated one) and to each `deployment.yaml` env block.
-- **Inter-service URLs are not injected either.** `order-service` falls back to `http://localhost:3002` /
-  `:3004`, and the frontend's `/api/config` falls back to `http://localhost:300x` — which points the *browser*
-  at itself. In-cluster these should be `http://<release>-apps-product-service:3002` etc., or the public AGC
-  paths for the frontend.
-- **HTTPRoute prefixes don't match the app routes.** Routes match `/auth`, `/product`, `/order`, `/payment`,
-  but the services serve `/api/auth`, `/api/products`, … with no `URLRewrite` filter in between. Either add a
-  rewrite filter or align the prefixes.
-- **`stage` and `prod` are empty stubs.** Only `env/dev` is wired up.
-- **`env/dev/backend.tf` is empty**, so dev state is local (`env/dev/terraform.tfstate`). The `backend/` module
-  provisions the storage for remote state but nothing consumes it yet.
-- **Terraform local state files are present in the working tree.** They are gitignored, but treat them as
-  secret material — they contain database credentials.
-- **The compose file and `terraform.tfvars` examples use a weak shared password** (`P@ssw0rd123!`). Fine for a
-  throwaway dev subscription, not for anything else.
-- **Module `depends_on` between networking and aks is commented out**, and the aks module passes
-  `module.aks.oidc_issuer_url` back into itself as an input. It applies today, but the dependency graph is
-  fragile — expect ordering surprises on a clean apply.
-- **WAF is in `Detection` mode**, so it logs but does not block. Switch to `Prevention` when you're confident in
-  the rule set.
-- **`ARCHITECTURE.md`, `TRAFFIC_FLOW.md` and the module `README.md` files are empty placeholders** created by
-  `create_structure.sh`. `PROJECT_STRUCTURE.txt` still describes the original `web_app_with_database_infra`
-  scaffold and no longer reflects this repo.
